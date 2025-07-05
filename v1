@@ -14,6 +14,11 @@ local bodyVelocity, bodyGyro
 local markers = {}
 local currentTab = "FLY"
 
+-- CarFly Variablen
+local carFlying = false
+local carBodyVelocity, carBodyGyro
+local currentVehicle = nil
+
 -- Napolo Menu GUI
 local screenGui = Instance.new("ScreenGui")
 screenGui.Name = "NapoloMenu"
@@ -22,8 +27,8 @@ screenGui.Parent = player.PlayerGui
 -- Hauptframe
 local mainFrame = Instance.new("Frame")
 mainFrame.Name = "MainFrame"
-mainFrame.Size = UDim2.new(0, 250, 0, 250)
-mainFrame.Position = UDim2.new(0.8, 0, 0.5, -125)
+mainFrame.Size = UDim2.new(0, 250, 0, 300)
+mainFrame.Position = UDim2.new(0.8, 0, 0.5, -150)
 mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
 mainFrame.BorderSizePixel = 0
 mainFrame.ClipsDescendants = true
@@ -132,7 +137,7 @@ espTabCorner.Parent = espTab
 -- Content Frame
 local contentFrame = Instance.new("Frame")
 contentFrame.Name = "Content"
-contentFrame.Size = UDim2.new(1, -10, 1, -80)
+contentFrame.Size = UDim2.new(1, -10, 1, -110)
 contentFrame.Position = UDim2.new(0, 5, 0, 75)
 contentFrame.BackgroundTransparency = 1
 contentFrame.Parent = mainFrame
@@ -204,6 +209,22 @@ local fillCorner = Instance.new("UICorner")
 fillCorner.CornerRadius = UDim.new(0, 8)
 fillCorner.Parent = speedFill
 
+-- CarFly-Button
+local carFlyButton = Instance.new("TextButton")
+carFlyButton.Name = "CarFlyButton"
+carFlyButton.Size = UDim2.new(1, 0, 0, 40)
+carFlyButton.Position = UDim2.new(0, 0, 0, 120)
+carFlyButton.Text = "CARFLY: AUS"
+carFlyButton.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+carFlyButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+carFlyButton.Font = Enum.Font.GothamMedium
+carFlyButton.TextSize = 14
+carFlyButton.Parent = flyContent
+
+local carFlyCorner = Instance.new("UICorner")
+carFlyCorner.CornerRadius = UDim.new(0, 8)
+carFlyCorner.Parent = carFlyButton
+
 -- ESP Tab Inhalt
 local espContent = Instance.new("Frame")
 espContent.Name = "EspContent"
@@ -225,7 +246,7 @@ markButton.TextSize = 14
 markButton.Parent = espContent
 
 local markCorner = Instance.new("UICorner")
-markCorner.CornerRadius = UDim.new(0, 8)
+markCorner.CornerRadius = UDim.new(0, 6)
 markCorner.Parent = markButton
 
 -- Namens-Anzeige
@@ -241,7 +262,7 @@ nameToggle.TextSize = 14
 nameToggle.Parent = espContent
 
 local nameToggleCorner = Instance.new("UICorner")
-nameToggleCorner.CornerRadius = UDim.new(0, 8)
+nameToggleCorner.CornerRadius = UDim.new(0, 6)
 nameToggleCorner.Parent = nameToggle
 
 -- Entfernungs-Anzeige
@@ -257,7 +278,7 @@ distanceToggle.TextSize = 14
 distanceToggle.Parent = espContent
 
 local distanceCorner = Instance.new("UICorner")
-distanceCorner.CornerRadius = UDim.new(0, 8)
+distanceCorner.CornerRadius = UDim.new(0, 6)
 distanceCorner.Parent = distanceToggle
 
 -- Tab-Wechsel-Funktion
@@ -449,34 +470,131 @@ local function toggleFlight()
     end
 end
 
+-- Überarbeitete CarFly-Funktion
+local function toggleCarFly()
+    carFlying = not carFlying
+    
+    if carFlying then
+        -- Bessere Fahrzeugerkennung
+        currentVehicle = nil
+        local humanoid = character:FindFirstChildOfClass("Humanoid")
+        if humanoid and humanoid.SeatPart then
+            currentVehicle = humanoid.SeatPart:FindFirstAncestorOfClass("Model")
+        end
+        
+        if currentVehicle then
+            local rootPart = currentVehicle:FindFirstChild("HumanoidRootPart") or currentVehicle.PrimaryPart or currentVehicle:FindFirstChildWhichIsA("BasePart")
+            
+            if rootPart then
+                -- Alte Physik-Instanzen entfernen
+                for _, v in pairs(rootPart:GetChildren()) do
+                    if v:IsA("BodyVelocity") or v:IsA("BodyGyro") then
+                        v:Destroy()
+                    end
+                end
+                
+                -- Neue Physik-Instanzen erstellen
+                carBodyVelocity = Instance.new("BodyVelocity")
+                carBodyVelocity.Velocity = Vector3.new(0, 0, 0)
+                carBodyVelocity.MaxForce = Vector3.new(9e9, 9e9, 9e9)
+                carBodyVelocity.P = 1000
+                
+                carBodyGyro = Instance.new("BodyGyro")
+                carBodyGyro.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
+                carBodyGyro.P = 10000
+                carBodyGyro.D = 500
+                carBodyGyro.CFrame = rootPart.CFrame
+                
+                carBodyVelocity.Parent = rootPart
+                carBodyGyro.Parent = rootPart
+                
+                carFlyButton.Text = "CARFLY: AN"
+                carFlyButton.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
+            else
+                warn("Kein RootPart im Fahrzeug gefunden!")
+                carFlying = false
+                return
+            end
+        else
+            warn("Kein Fahrzeug gefunden! Setze dich in ein Fahrzeug.")
+            carFlying = false
+            return
+        end
+    else
+        if currentVehicle then
+            local rootPart = currentVehicle:FindFirstChild("HumanoidRootPart") or currentVehicle.PrimaryPart or currentVehicle:FindFirstChildWhichIsA("BasePart")
+            if rootPart then
+                for _, v in pairs(rootPart:GetChildren()) do
+                    if v:IsA("BodyVelocity") or v:IsA("BodyGyro") then
+                        v:Destroy()
+                    end
+                end
+            end
+            currentVehicle = nil
+        end
+        
+        carFlyButton.Text = "CARFLY: AUS"
+        carFlyButton.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+    end
+end
+
 -- Flugsteuerung
 local function updateFlight()
-    if not flying or not bodyVelocity or not bodyGyro then return end
-    
-    local rootPart = character:FindFirstChild("HumanoidRootPart")
-    if not rootPart then return end
-    
-    bodyGyro.CFrame = CFrame.new(rootPart.Position, rootPart.Position + rootPart.CFrame.LookVector)
-    
-    local direction = Vector3.new(0, 0, 0)
-    local camera = workspace.CurrentCamera
-    local lookVector = camera.CFrame.LookVector
-    lookVector = Vector3.new(lookVector.X, 0, lookVector.Z).Unit
-    local rightVector = camera.CFrame.RightVector
-    rightVector = Vector3.new(rightVector.X, 0, rightVector.Z).Unit
-    
-    if UserInputService:IsKeyDown(Enum.KeyCode.W) then direction += lookVector end
-    if UserInputService:IsKeyDown(Enum.KeyCode.S) then direction -= lookVector end
-    if UserInputService:IsKeyDown(Enum.KeyCode.A) then direction -= rightVector end
-    if UserInputService:IsKeyDown(Enum.KeyCode.D) then direction += rightVector end
-    if UserInputService:IsKeyDown(Enum.KeyCode.Space) then direction += Vector3.new(0, 1, 0) end
-    if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then direction += Vector3.new(0, -1, 0) end
-    
-    if direction.Magnitude > 0 then
-        direction = direction.Unit
+    -- Normale Flugsteuerung
+    if flying and bodyVelocity and bodyGyro then
+        local rootPart = character:FindFirstChild("HumanoidRootPart")
+        if not rootPart then return end
+        
+        bodyGyro.CFrame = CFrame.new(rootPart.Position, rootPart.Position + rootPart.CFrame.LookVector)
+        
+        local direction = Vector3.new(0, 0, 0)
+        local camera = workspace.CurrentCamera
+        local lookVector = camera.CFrame.LookVector
+        lookVector = Vector3.new(lookVector.X, 0, lookVector.Z).Unit
+        local rightVector = camera.CFrame.RightVector
+        rightVector = Vector3.new(rightVector.X, 0, rightVector.Z).Unit
+        
+        if UserInputService:IsKeyDown(Enum.KeyCode.W) then direction += lookVector end
+        if UserInputService:IsKeyDown(Enum.KeyCode.S) then direction -= lookVector end
+        if UserInputService:IsKeyDown(Enum.KeyCode.A) then direction -= rightVector end
+        if UserInputService:IsKeyDown(Enum.KeyCode.D) then direction += rightVector end
+        if UserInputService:IsKeyDown(Enum.KeyCode.Space) then direction += Vector3.new(0, 1, 0) end
+        if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then direction += Vector3.new(0, -1, 0) end
+        
+        if direction.Magnitude > 0 then
+            direction = direction.Unit
+        end
+        
+        bodyVelocity.Velocity = direction * flightSpeed
     end
     
-    bodyVelocity.Velocity = direction * flightSpeed
+    -- CarFly-Steuerung
+    if carFlying and carBodyVelocity and carBodyGyro and currentVehicle then
+        local rootPart = currentVehicle:FindFirstChild("HumanoidRootPart") or currentVehicle.PrimaryPart or currentVehicle:FindFirstChildWhichIsA("BasePart")
+        if not rootPart then return end
+        
+        carBodyGyro.CFrame = CFrame.new(rootPart.Position, rootPart.Position + rootPart.CFrame.LookVector)
+        
+        local direction = Vector3.new(0, 0, 0)
+        local camera = workspace.CurrentCamera
+        local lookVector = camera.CFrame.LookVector
+        lookVector = Vector3.new(lookVector.X, 0, lookVector.Z).Unit
+        local rightVector = camera.CFrame.RightVector
+        rightVector = Vector3.new(rightVector.X, 0, rightVector.Z).Unit
+        
+        if UserInputService:IsKeyDown(Enum.KeyCode.W) then direction += lookVector end
+        if UserInputService:IsKeyDown(Enum.KeyCode.S) then direction -= lookVector end
+        if UserInputService:IsKeyDown(Enum.KeyCode.A) then direction -= rightVector end
+        if UserInputService:IsKeyDown(Enum.KeyCode.D) then direction += rightVector end
+        if UserInputService:IsKeyDown(Enum.KeyCode.Space) then direction += Vector3.new(0, 1, 0) end
+        if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then direction += Vector3.new(0, -1, 0) end
+        
+        if direction.Magnitude > 0 then
+            direction = direction.Unit
+        end
+        
+        carBodyVelocity.Velocity = direction * flightSpeed
+    end
 end
 
 -- Geschwindigkeits-Slider
@@ -501,6 +619,7 @@ end)
 
 -- Event-Handler
 flightButton.MouseButton1Click:Connect(toggleFlight)
+carFlyButton.MouseButton1Click:Connect(toggleCarFly)
 markButton.MouseButton1Click:Connect(toggleMarking)
 nameToggle.MouseButton1Click:Connect(toggleNames)
 distanceToggle.MouseButton1Click:Connect(toggleDistance)
@@ -519,6 +638,11 @@ player.CharacterAdded:Connect(function(newChar)
         toggleFlight()
         task.wait()
         toggleFlight()
+    end
+    if carFlying then
+        toggleCarFly()
+        task.wait()
+        toggleCarFly()
     end
     if marking then
         toggleMarking()
