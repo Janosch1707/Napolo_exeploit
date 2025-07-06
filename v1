@@ -586,7 +586,7 @@ local function updateFlight()
         if UserInputService:IsKeyDown(Enum.KeyCode.S) then direction -= lookVector end
         if UserInputService:IsKeyDown(Enum.KeyCode.A) then direction -= rightVector end
         if UserInputService:IsKeyDown(Enum.KeyCode.D) then direction += rightVector end
-        if UserInputService:IsKeyDown(Enum.KeyCode.Space) then direction += Vector3.new(0, 1, 0) end
+        if UserInputService:IsKeyDown(Enum.KeyCode.X) then direction += Vector3.new(0, 1, 0) end
         if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then direction += Vector3.new(0, -1, 0) end
         
         if direction.Magnitude > 0 then
