@@ -4,13 +4,13 @@ local humanoid = character:WaitForChild("Humanoid")
 local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 
--- Key-System Variablen
+-- Key-System
 local correctKey = "Napolo1234"
 local keyVerified = false
 local keyAttempts = 0
 local maxAttempts = 3
 
--- Key-Eingabe GUI
+-- Key GUI
 local keyGui = Instance.new("ScreenGui")
 keyGui.Name = "KeyGui"
 keyGui.Parent = player.PlayerGui
@@ -82,14 +82,13 @@ messageLabel.TextSize = 14
 messageLabel.TextXAlignment = Enum.TextXAlignment.Left
 messageLabel.Parent = keyFrame
 
--- Key-Überprüfungsfunktion
+-- Key Verification
 local function verifyKey()
     local enteredKey = keyBox.Text
     
     if enteredKey == correctKey then
         keyVerified = true
         keyGui:Destroy()
-        -- Hauptmenü initialisieren
         loadMainMenu()
     else
         keyAttempts = keyAttempts + 1
@@ -100,47 +99,37 @@ local function verifyKey()
             messageLabel.Text = "Maximum attempts reached. Closing..."
             wait(2)
             keyGui:Destroy()
-            return
         end
     end
 end
 
--- Submit-Button Event
 submitButton.MouseButton1Click:Connect(verifyKey)
+keyBox.FocusLost:Connect(function(enterPressed) if enterPressed then verifyKey() end end)
 
--- Enter-Taste Event
-keyBox.FocusLost:Connect(function(enterPressed)
-    if enterPressed then
-        verifyKey()
-    end
-end)
-
--- Hauptmenü Funktion
+-- Main Menu
 function loadMainMenu()
-    -- Einstellungen
+    -- Settings
     local flightSpeed = 50
     local flying = false
     local marking = false
     local showNames = true
     local showDistance = true
+    local useTeamColors = false
     local bodyVelocity, bodyGyro
     local markers = {}
     local currentTab = "FLY"
-
-    -- CarFly Variablen
     local carFlying = false
     local carBodyVelocity, carBodyGyro
     local currentVehicle = nil
 
-    -- Napolo Menu GUI
+    -- Main GUI
     local screenGui = Instance.new("ScreenGui")
     screenGui.Name = "NapoloMenu"
     screenGui.Parent = player.PlayerGui
 
-    -- Hauptframe
     local mainFrame = Instance.new("Frame")
     mainFrame.Name = "MainFrame"
-    mainFrame.Size = UDim2.new(0, 300, 0, 350) -- Größe angepasst für neuen Tab
+    mainFrame.Size = UDim2.new(0, 300, 0, 350)
     mainFrame.Position = UDim2.new(0.8, 0, 0.5, -175)
     mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
     mainFrame.BorderSizePixel = 0
@@ -151,7 +140,7 @@ function loadMainMenu()
     mainCorner.CornerRadius = UDim.new(0, 12)
     mainCorner.Parent = mainFrame
 
-    -- Titelbar
+    -- Title Bar
     local titleBar = Instance.new("Frame")
     titleBar.Name = "TitleBar"
     titleBar.Size = UDim2.new(1, 0, 0, 40)
@@ -164,7 +153,6 @@ function loadMainMenu()
     titleBarCorner.CornerRadius = UDim.new(0, 12)
     titleBarCorner.Parent = titleBar
 
-    -- Titel
     local title = Instance.new("TextLabel")
     title.Name = "Title"
     title.Text = "NAPOLO MENU V1"
@@ -177,7 +165,7 @@ function loadMainMenu()
     title.TextXAlignment = Enum.TextXAlignment.Left
     title.Parent = titleBar
 
-    -- Drag-Funktion
+    -- Drag Functionality
     local dragging, dragStartPos, frameStartPos
     titleBar.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
@@ -207,7 +195,7 @@ function loadMainMenu()
         end
     end)
 
-    -- Tab-Leiste (angepasst für 3 Tabs)
+    -- Tabs
     local tabFrame = Instance.new("Frame")
     tabFrame.Name = "TabFrame"
     tabFrame.Size = UDim2.new(1, 0, 0, 30)
@@ -215,7 +203,6 @@ function loadMainMenu()
     tabFrame.BackgroundTransparency = 1
     tabFrame.Parent = mainFrame
 
-    -- FLY Tab
     local flyTab = Instance.new("TextButton")
     flyTab.Name = "FlyTab"
     flyTab.Size = UDim2.new(0.33, -5, 1, 0)
@@ -231,7 +218,6 @@ function loadMainMenu()
     flyTabCorner.CornerRadius = UDim.new(0, 6)
     flyTabCorner.Parent = flyTab
 
-    -- ESP Tab
     local espTab = Instance.new("TextButton")
     espTab.Name = "EspTab"
     espTab.Size = UDim2.new(0.33, -5, 1, 0)
@@ -247,7 +233,6 @@ function loadMainMenu()
     espTabCorner.CornerRadius = UDim.new(0, 6)
     espTabCorner.Parent = espTab
 
-    -- TP Tab
     local tpTab = Instance.new("TextButton")
     tpTab.Name = "TpTab"
     tpTab.Size = UDim2.new(0.33, -5, 1, 0)
@@ -271,7 +256,7 @@ function loadMainMenu()
     contentFrame.BackgroundTransparency = 1
     contentFrame.Parent = mainFrame
 
-    -- FLY Tab Inhalt
+    -- FLY Tab
     local flyContent = Instance.new("Frame")
     flyContent.Name = "FlyContent"
     flyContent.Size = UDim2.new(1, 0, 1, 0)
@@ -279,7 +264,6 @@ function loadMainMenu()
     flyContent.Visible = true
     flyContent.Parent = contentFrame
 
-    -- Flugmodus Button
     local flightButton = Instance.new("TextButton")
     flightButton.Name = "FlightButton"
     flightButton.Size = UDim2.new(1, 0, 0, 40)
@@ -295,7 +279,6 @@ function loadMainMenu()
     buttonCorner.CornerRadius = UDim.new(0, 8)
     buttonCorner.Parent = flightButton
 
-    -- Geschwindigkeits-Regler
     local speedContainer = Instance.new("Frame")
     speedContainer.Name = "SpeedContainer"
     speedContainer.Size = UDim2.new(1, 0, 0, 60)
@@ -338,7 +321,6 @@ function loadMainMenu()
     fillCorner.CornerRadius = UDim.new(0, 8)
     fillCorner.Parent = speedFill
 
-    -- CarFly-Button
     local carFlyButton = Instance.new("TextButton")
     carFlyButton.Name = "CarFlyButton"
     carFlyButton.Size = UDim2.new(1, 0, 0, 40)
@@ -354,7 +336,7 @@ function loadMainMenu()
     carFlyCorner.CornerRadius = UDim.new(0, 8)
     carFlyCorner.Parent = carFlyButton
 
-    -- ESP Tab Inhalt
+    -- ESP Tab
     local espContent = Instance.new("Frame")
     espContent.Name = "EspContent"
     espContent.Size = UDim2.new(1, 0, 1, 0)
@@ -362,7 +344,6 @@ function loadMainMenu()
     espContent.Visible = false
     espContent.Parent = contentFrame
 
-    -- Markierungs-Button
     local markButton = Instance.new("TextButton")
     markButton.Name = "MarkButton"
     markButton.Size = UDim2.new(1, 0, 0, 40)
@@ -378,11 +359,25 @@ function loadMainMenu()
     markCorner.CornerRadius = UDim.new(0, 6)
     markCorner.Parent = markButton
 
-    -- Namens-Anzeige
+    local teamColorToggle = Instance.new("TextButton")
+    teamColorToggle.Name = "TeamColorToggle"
+    teamColorToggle.Size = UDim2.new(1, 0, 0, 40)
+    teamColorToggle.Position = UDim2.new(0, 0, 0, 50)
+    teamColorToggle.Text = "TEAMFARBEN: AUS"
+    teamColorToggle.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+    teamColorToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
+    teamColorToggle.Font = Enum.Font.GothamMedium
+    teamColorToggle.TextSize = 14
+    teamColorToggle.Parent = espContent
+
+    local teamColorCorner = Instance.new("UICorner")
+    teamColorCorner.CornerRadius = UDim.new(0, 6)
+    teamColorCorner.Parent = teamColorToggle
+
     local nameToggle = Instance.new("TextButton")
     nameToggle.Name = "NameToggle"
     nameToggle.Size = UDim2.new(1, 0, 0, 40)
-    nameToggle.Position = UDim2.new(0, 0, 0, 50)
+    nameToggle.Position = UDim2.new(0, 0, 0, 100)
     nameToggle.Text = "NAMEN ANZEIGEN: AN"
     nameToggle.BackgroundColor3 = Color3.fromRGB(0, 120, 180)
     nameToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -394,11 +389,10 @@ function loadMainMenu()
     nameToggleCorner.CornerRadius = UDim.new(0, 6)
     nameToggleCorner.Parent = nameToggle
 
-    -- Entfernungs-Anzeige
     local distanceToggle = Instance.new("TextButton")
     distanceToggle.Name = "DistanceToggle"
     distanceToggle.Size = UDim2.new(1, 0, 0, 40)
-    distanceToggle.Position = UDim2.new(0, 0, 0, 100)
+    distanceToggle.Position = UDim2.new(0, 0, 0, 150)
     distanceToggle.Text = "ENTFERNUNG: AN"
     distanceToggle.BackgroundColor3 = Color3.fromRGB(0, 120, 180)
     distanceToggle.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -410,7 +404,7 @@ function loadMainMenu()
     distanceCorner.CornerRadius = UDim.new(0, 6)
     distanceCorner.Parent = distanceToggle
 
-    -- TP Tab Inhalt
+    -- TP Tab
     local tpContent = Instance.new("Frame")
     tpContent.Name = "TpContent"
     tpContent.Size = UDim2.new(1, 0, 1, 0)
@@ -418,7 +412,6 @@ function loadMainMenu()
     tpContent.Visible = false
     tpContent.Parent = contentFrame
 
-    -- Spielername Eingabe
     local playerNameBox = Instance.new("TextBox")
     playerNameBox.Name = "PlayerNameBox"
     playerNameBox.Size = UDim2.new(1, 0, 0, 40)
@@ -435,7 +428,6 @@ function loadMainMenu()
     nameBoxCorner.CornerRadius = UDim.new(0, 6)
     nameBoxCorner.Parent = playerNameBox
 
-    -- Teleport Button
     local teleportButton = Instance.new("TextButton")
     teleportButton.Name = "TeleportButton"
     teleportButton.Size = UDim2.new(1, 0, 0, 40)
@@ -451,15 +443,15 @@ function loadMainMenu()
     teleportCorner.CornerRadius = UDim.new(0, 6)
     teleportCorner.Parent = teleportButton
 
-    -- Teleport-Funktion
+    -- Functions
     local function teleportToPlayer()
         local targetName = playerNameBox.Text
         if targetName == "" then return end
         
         local targetPlayer = nil
-        for _, player in pairs(game:GetService("Players"):GetPlayers()) do
-            if string.find(string.lower(player.Name), string.lower(targetName)) then
-                targetPlayer = player
+        for _, p in pairs(game:GetService("Players"):GetPlayers()) do
+            if string.find(string.lower(p.Name), string.lower(targetName)) then
+                targetPlayer = p
                 break
             end
         end
@@ -469,14 +461,13 @@ function loadMainMenu()
             local localRoot = character:FindFirstChild("HumanoidRootPart")
             
             if targetRoot and localRoot then
-                localRoot.CFrame = targetRoot.CFrame + Vector3.new(0, 3, 0) -- Etwas über dem Spieler spawnen
+                localRoot.CFrame = targetRoot.CFrame + Vector3.new(0, 3, 0)
             end
         else
             warn("Spieler nicht gefunden oder hat keinen Charakter!")
         end
     end
 
-    -- Tab-Wechsel-Funktion (angepasst für 3 Tabs)
     local function switchTab(tab)
         currentTab = tab
         flyContent.Visible = (tab == "FLY")
@@ -488,36 +479,26 @@ function loadMainMenu()
         tpTab.BackgroundColor3 = (tab == "TP") and Color3.fromRGB(0, 170, 0) or Color3.fromRGB(60, 60, 70)
     end
 
-    -- Tab-Buttons verbinden
-    flyTab.MouseButton1Click:Connect(function()
-        switchTab("FLY")
-    end)
-
-    espTab.MouseButton1Click:Connect(function()
-        switchTab("ESP")
-    end)
-
-    tpTab.MouseButton1Click:Connect(function()
-        switchTab("TP")
-    end)
-
-    -- Teleport-Button Event
-    teleportButton.MouseButton1Click:Connect(teleportToPlayer)
-
-    -- Enter-Taste für Teleport
-    playerNameBox.FocusLost:Connect(function(enterPressed)
-        if enterPressed then
-            teleportToPlayer()
+    local function toggleTeamColors()
+        useTeamColors = not useTeamColors
+        teamColorToggle.Text = "TEAMFARBEN: " .. (useTeamColors and "AN" or "AUS")
+        teamColorToggle.BackgroundColor3 = useTeamColors and Color3.fromRGB(0, 120, 180) or Color3.fromRGB(60, 60, 70)
+        
+        if marking then
+            for player, highlight in pairs(markers) do
+                if player.Character then
+                    if useTeamColors then
+                        highlight.FillColor = player.TeamColor.Color
+                        highlight.OutlineColor = player.TeamColor.Color
+                    else
+                        highlight.FillColor = Color3.fromRGB(255, 0, 0)
+                        highlight.OutlineColor = Color3.fromRGB(150, 0, 0)
+                    end
+                end
+            end
         end
-    end)
-
-    -- (Rest des Codes bleibt gleich...)
-    -- Entfernungsberechnung
-    local function calculateDistance(position1, position2)
-        return (position1 - position2).Magnitude
     end
 
-    -- Entfernungsanzeige umschalten
     local function toggleDistance()
         showDistance = not showDistance
         distanceToggle.Text = "ENTFERNUNG: " .. (showDistance and "AN" or "AUS")
@@ -535,7 +516,6 @@ function loadMainMenu()
         end
     end
 
-    -- Namensanzeige umschalten
     local function toggleNames()
         showNames = not showNames
         nameToggle.Text = "NAMEN ANZEIGEN: " .. (showNames and "AN" or "AUS")
@@ -553,7 +533,6 @@ function loadMainMenu()
         end
     end
 
-    -- Markierungsfunktion mit korrigierter Entfernungsanzeige
     local function toggleMarking()
         marking = not marking
         
@@ -565,11 +544,10 @@ function loadMainMenu()
                 if otherPlayer ~= player and otherPlayer.Character then
                     local highlight = Instance.new("Highlight")
                     highlight.Name = "NapoloMarker"
-                    highlight.FillColor = Color3.fromRGB(255, 0, 0)
-                    highlight.OutlineColor = Color3.fromRGB(150, 0, 0)
+                    highlight.FillColor = useTeamColors and otherPlayer.TeamColor.Color or Color3.fromRGB(255, 0, 0)
+                    highlight.OutlineColor = useTeamColors and otherPlayer.TeamColor.Color or Color3.fromRGB(150, 0, 0)
                     highlight.Parent = otherPlayer.Character
                     
-                    -- Namensschild
                     if showNames then
                         local billboard = Instance.new("BillboardGui")
                         billboard.Name = "NameBillboard"
@@ -591,7 +569,6 @@ function loadMainMenu()
                         billboard.Parent = highlight
                     end
                     
-                    -- Entfernungsanzeige
                     if showDistance then
                         local distanceBillboard = Instance.new("BillboardGui")
                         distanceBillboard.Name = "DistanceBillboard"
@@ -627,7 +604,6 @@ function loadMainMenu()
         end
     end
 
-    -- Entfernungen aktualisieren
     local function updateDistances()
         if not marking or not showDistance then return end
         
@@ -651,7 +627,6 @@ function loadMainMenu()
         end
     end
 
-    -- Flugfunktion
     local function toggleFlight()
         flying = not flying
         
@@ -682,12 +657,10 @@ function loadMainMenu()
         end
     end
 
-    -- Überarbeitete CarFly-Funktion
     local function toggleCarFly()
         carFlying = not carFlying
         
         if carFlying then
-            -- Bessere Fahrzeugerkennung
             currentVehicle = nil
             local humanoid = character:FindFirstChildOfClass("Humanoid")
             if humanoid and humanoid.SeatPart then
@@ -698,14 +671,12 @@ function loadMainMenu()
                 local rootPart = currentVehicle:FindFirstChild("HumanoidRootPart") or currentVehicle.PrimaryPart or currentVehicle:FindFirstChildWhichIsA("BasePart")
                 
                 if rootPart then
-                    -- Alte Physik-Instanzen entfernen
                     for _, v in pairs(rootPart:GetChildren()) do
                         if v:IsA("BodyVelocity") or v:IsA("BodyGyro") then
                             v:Destroy()
                         end
                     end
                     
-                    -- Neue Physik-Instanzen erstellen
                     carBodyVelocity = Instance.new("BodyVelocity")
                     carBodyVelocity.Velocity = Vector3.new(0, 0, 0)
                     carBodyVelocity.MaxForce = Vector3.new(9e9, 9e9, 9e9)
@@ -750,9 +721,7 @@ function loadMainMenu()
         end
     end
 
-    -- Flugsteuerung
     local function updateFlight()
-        -- Normale Flugsteuerung
         if flying and bodyVelocity and bodyGyro then
             local rootPart = character:FindFirstChild("HumanoidRootPart")
             if not rootPart then return end
@@ -780,7 +749,6 @@ function loadMainMenu()
             bodyVelocity.Velocity = direction * flightSpeed
         end
         
-        -- CarFly-Steuerung
         if carFlying and carBodyVelocity and carBodyGyro and currentVehicle then
             local rootPart = currentVehicle:FindFirstChild("HumanoidRootPart") or currentVehicle.PrimaryPart or currentVehicle:FindFirstChildWhichIsA("BasePart")
             if not rootPart then return end
@@ -809,7 +777,22 @@ function loadMainMenu()
         end
     end
 
-    -- Geschwindigkeits-Slider
+    -- Event Connections
+    flyTab.MouseButton1Click:Connect(function() switchTab("FLY") end)
+    espTab.MouseButton1Click:Connect(function() switchTab("ESP") end)
+    tpTab.MouseButton1Click:Connect(function() switchTab("TP") end)
+    
+    teleportButton.MouseButton1Click:Connect(teleportToPlayer)
+    playerNameBox.FocusLost:Connect(function(enterPressed) if enterPressed then teleportToPlayer() end end)
+    
+    flightButton.MouseButton1Click:Connect(toggleFlight)
+    carFlyButton.MouseButton1Click:Connect(toggleCarFly)
+    markButton.MouseButton1Click:Connect(toggleMarking)
+    teamColorToggle.MouseButton1Click:Connect(toggleTeamColors)
+    nameToggle.MouseButton1Click:Connect(toggleNames)
+    distanceToggle.MouseButton1Click:Connect(toggleDistance)
+    
+    -- Speed Slider
     speedSlider.MouseButton1Down:Connect(function()
         local connection
         connection = UserInputService.InputChanged:Connect(function(input)
@@ -829,20 +812,13 @@ function loadMainMenu()
         end)
     end)
 
-    -- Event-Handler
-    flightButton.MouseButton1Click:Connect(toggleFlight)
-    carFlyButton.MouseButton1Click:Connect(toggleCarFly)
-    markButton.MouseButton1Click:Connect(toggleMarking)
-    nameToggle.MouseButton1Click:Connect(toggleNames)
-    distanceToggle.MouseButton1Click:Connect(toggleDistance)
-
-    -- Aktualisierungen
+    -- Runtime Updates
     RunService.Heartbeat:Connect(function()
         updateFlight()
         updateDistances()
     end)
 
-    -- Charakter-Reset
+    -- Character Reset Handling
     player.CharacterAdded:Connect(function(newChar)
         character = newChar
         humanoid = character:WaitForChild("Humanoid")
@@ -863,14 +839,14 @@ function loadMainMenu()
         end
     end)
 
-    -- Neue Spieler markieren
+    -- New Player ESP Handling
     game.Players.PlayerAdded:Connect(function(newPlayer)
         newPlayer.CharacterAdded:Connect(function(char)
             if marking and newPlayer ~= player then
                 local highlight = Instance.new("Highlight")
                 highlight.Name = "NapoloMarker"
-                highlight.FillColor = Color3.fromRGB(255, 0, 0)
-                highlight.OutlineColor = Color3.fromRGB(150, 0, 0)
+                highlight.FillColor = useTeamColors and newPlayer.TeamColor.Color or Color3.fromRGB(255, 0, 0)
+                highlight.OutlineColor = useTeamColors and newPlayer.TeamColor.Color or Color3.fromRGB(150, 0, 0)
                 highlight.Parent = char
                 
                 if showNames then
@@ -920,6 +896,9 @@ function loadMainMenu()
         end)
     end)
 
+    -- Set Default Tab
+    switchTab("FLY")
+end
     -- Standard-Tab aktivieren
     switchTab("FLY")
 end
