@@ -899,6 +899,3 @@ function loadMainMenu()
     -- Set Default Tab
     switchTab("FLY")
 end
-    -- Standard-Tab aktivieren
-    switchTab("FLY")
-end
