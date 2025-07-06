@@ -140,8 +140,8 @@ function loadMainMenu()
     -- Hauptframe
     local mainFrame = Instance.new("Frame")
     mainFrame.Name = "MainFrame"
-    mainFrame.Size = UDim2.new(0, 250, 0, 300)
-    mainFrame.Position = UDim2.new(0.8, 0, 0.5, -150)
+    mainFrame.Size = UDim2.new(0, 300, 0, 350) -- Größe angepasst für neuen Tab
+    mainFrame.Position = UDim2.new(0.8, 0, 0.5, -175)
     mainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 40)
     mainFrame.BorderSizePixel = 0
     mainFrame.ClipsDescendants = true
@@ -207,7 +207,7 @@ function loadMainMenu()
         end
     end)
 
-    -- Tab-Leiste
+    -- Tab-Leiste (angepasst für 3 Tabs)
     local tabFrame = Instance.new("Frame")
     tabFrame.Name = "TabFrame"
     tabFrame.Size = UDim2.new(1, 0, 0, 30)
@@ -218,7 +218,7 @@ function loadMainMenu()
     -- FLY Tab
     local flyTab = Instance.new("TextButton")
     flyTab.Name = "FlyTab"
-    flyTab.Size = UDim2.new(0.5, -5, 1, 0)
+    flyTab.Size = UDim2.new(0.33, -5, 1, 0)
     flyTab.Position = UDim2.new(0, 0, 0, 0)
     flyTab.Text = "FLY"
     flyTab.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
@@ -234,8 +234,8 @@ function loadMainMenu()
     -- ESP Tab
     local espTab = Instance.new("TextButton")
     espTab.Name = "EspTab"
-    espTab.Size = UDim2.new(0.5, -5, 1, 0)
-    espTab.Position = UDim2.new(0.5, 5, 0, 0)
+    espTab.Size = UDim2.new(0.33, -5, 1, 0)
+    espTab.Position = UDim2.new(0.33, 5, 0, 0)
     espTab.Text = "ESP"
     espTab.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
     espTab.TextColor3 = Color3.fromRGB(255, 255, 255)
@@ -246,6 +246,22 @@ function loadMainMenu()
     local espTabCorner = Instance.new("UICorner")
     espTabCorner.CornerRadius = UDim.new(0, 6)
     espTabCorner.Parent = espTab
+
+    -- TP Tab
+    local tpTab = Instance.new("TextButton")
+    tpTab.Name = "TpTab"
+    tpTab.Size = UDim2.new(0.33, -5, 1, 0)
+    tpTab.Position = UDim2.new(0.66, 5, 0, 0)
+    tpTab.Text = "TP"
+    tpTab.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+    tpTab.TextColor3 = Color3.fromRGB(255, 255, 255)
+    tpTab.Font = Enum.Font.GothamBold
+    tpTab.TextSize = 14
+    tpTab.Parent = tabFrame
+
+    local tpTabCorner = Instance.new("UICorner")
+    tpTabCorner.CornerRadius = UDim.new(0, 6)
+    tpTabCorner.Parent = tpTab
 
     -- Content Frame
     local contentFrame = Instance.new("Frame")
@@ -394,14 +410,82 @@ function loadMainMenu()
     distanceCorner.CornerRadius = UDim.new(0, 6)
     distanceCorner.Parent = distanceToggle
 
-    -- Tab-Wechsel-Funktion
+    -- TP Tab Inhalt
+    local tpContent = Instance.new("Frame")
+    tpContent.Name = "TpContent"
+    tpContent.Size = UDim2.new(1, 0, 1, 0)
+    tpContent.BackgroundTransparency = 1
+    tpContent.Visible = false
+    tpContent.Parent = contentFrame
+
+    -- Spielername Eingabe
+    local playerNameBox = Instance.new("TextBox")
+    playerNameBox.Name = "PlayerNameBox"
+    playerNameBox.Size = UDim2.new(1, 0, 0, 40)
+    playerNameBox.Position = UDim2.new(0, 0, 0, 0)
+    playerNameBox.PlaceholderText = "Spielername eingeben"
+    playerNameBox.Text = ""
+    playerNameBox.BackgroundColor3 = Color3.fromRGB(40, 40, 50)
+    playerNameBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+    playerNameBox.Font = Enum.Font.Gotham
+    playerNameBox.TextSize = 14
+    playerNameBox.Parent = tpContent
+
+    local nameBoxCorner = Instance.new("UICorner")
+    nameBoxCorner.CornerRadius = UDim.new(0, 6)
+    nameBoxCorner.Parent = playerNameBox
+
+    -- Teleport Button
+    local teleportButton = Instance.new("TextButton")
+    teleportButton.Name = "TeleportButton"
+    teleportButton.Size = UDim2.new(1, 0, 0, 40)
+    teleportButton.Position = UDim2.new(0, 0, 0, 50)
+    teleportButton.Text = "ZUM SPIELER TELEPORTIEREN"
+    teleportButton.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
+    teleportButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    teleportButton.Font = Enum.Font.GothamMedium
+    teleportButton.TextSize = 14
+    teleportButton.Parent = tpContent
+
+    local teleportCorner = Instance.new("UICorner")
+    teleportCorner.CornerRadius = UDim.new(0, 6)
+    teleportCorner.Parent = teleportButton
+
+    -- Teleport-Funktion
+    local function teleportToPlayer()
+        local targetName = playerNameBox.Text
+        if targetName == "" then return end
+        
+        local targetPlayer = nil
+        for _, player in pairs(game:GetService("Players"):GetPlayers()) do
+            if string.find(string.lower(player.Name), string.lower(targetName)) then
+                targetPlayer = player
+                break
+            end
+        end
+        
+        if targetPlayer and targetPlayer.Character then
+            local targetRoot = targetPlayer.Character:FindFirstChild("HumanoidRootPart")
+            local localRoot = character:FindFirstChild("HumanoidRootPart")
+            
+            if targetRoot and localRoot then
+                localRoot.CFrame = targetRoot.CFrame + Vector3.new(0, 3, 0) -- Etwas über dem Spieler spawnen
+            end
+        else
+            warn("Spieler nicht gefunden oder hat keinen Charakter!")
+        end
+    end
+
+    -- Tab-Wechsel-Funktion (angepasst für 3 Tabs)
     local function switchTab(tab)
         currentTab = tab
         flyContent.Visible = (tab == "FLY")
         espContent.Visible = (tab == "ESP")
+        tpContent.Visible = (tab == "TP")
         
         flyTab.BackgroundColor3 = (tab == "FLY") and Color3.fromRGB(0, 120, 255) or Color3.fromRGB(60, 60, 70)
         espTab.BackgroundColor3 = (tab == "ESP") and Color3.fromRGB(170, 0, 0) or Color3.fromRGB(60, 60, 70)
+        tpTab.BackgroundColor3 = (tab == "TP") and Color3.fromRGB(0, 170, 0) or Color3.fromRGB(60, 60, 70)
     end
 
     -- Tab-Buttons verbinden
@@ -413,6 +497,21 @@ function loadMainMenu()
         switchTab("ESP")
     end)
 
+    tpTab.MouseButton1Click:Connect(function()
+        switchTab("TP")
+    end)
+
+    -- Teleport-Button Event
+    teleportButton.MouseButton1Click:Connect(teleportToPlayer)
+
+    -- Enter-Taste für Teleport
+    playerNameBox.FocusLost:Connect(function(enterPressed)
+        if enterPressed then
+            teleportToPlayer()
+        end
+    end)
+
+    -- (Rest des Codes bleibt gleich...)
     -- Entfernungsberechnung
     local function calculateDistance(position1, position2)
         return (position1 - position2).Magnitude
