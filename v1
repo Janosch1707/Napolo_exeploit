@@ -82,10 +82,42 @@ messageLabel.TextSize = 14
 messageLabel.TextXAlignment = Enum.TextXAlignment.Left
 messageLabel.Parent = keyFrame
 
+-- Entferne oder kommentiere den Block für keyLinkLabel KOMPLETT!
+
+-- Füge nur das Linkfeld ein, z.B. direkt nach keyBox:
+local keyLinkBox = Instance.new("TextBox")
+keyLinkBox.Name = "KeyLinkBox"
+keyLinkBox.Text = "KeyLink Kopieren"
+keyLinkBox.Size = UDim2.new(1, -40, 0, 20)
+keyLinkBox.Position = UDim2.new(0, 20, 0, 110) -- Direkt unter dem Eingabefeld
+keyLinkBox.BackgroundColor3 = Color3.fromRGB(30, 40, 55)
+keyLinkBox.TextColor3 = Color3.fromRGB(0, 180, 255)
+keyLinkBox.Font = Enum.Font.GothamBold
+keyLinkBox.TextSize = 13
+keyLinkBox.ClearTextOnFocus = false
+keyLinkBox.TextEditable = false
+keyLinkBox.Parent = keyFrame
+
+local keyLinkCorner = Instance.new("UICorner")
+keyLinkCorner.CornerRadius = UDim.new(0, 6)
+keyLinkCorner.Parent = keyLinkBox
+
+keyLinkBox.Focused:Connect(function()
+    setclipboard("https://link-hub.net/1368739/kFjGnlxIblGN")
+    keyLinkBox.Text = "Link kopiert!"
+    wait(1)
+    keyLinkBox.Text = "KeyLink Kopieren"
+end)
+
+-- Passe die Position des Submit-Buttons an, sodass er darunter sitzt:
+submitButton.Position = UDim2.new(0, 20, 0, 140)
+
+-- Passe messageLabel weiter nach unten an:
+messageLabel.Position = UDim2.new(0, 10, 0, 185)
+
 -- Key Verification
 local function verifyKey()
     local enteredKey = keyBox.Text
-    
     if enteredKey == correctKey then
         keyVerified = true
         keyGui:Destroy()
@@ -94,7 +126,6 @@ local function verifyKey()
         keyAttempts = keyAttempts + 1
         messageLabel.Text = "Invalid key! Attempts left: " .. (maxAttempts - keyAttempts)
         keyBox.Text = ""
-        
         if keyAttempts >= maxAttempts then
             messageLabel.Text = "Maximum attempts reached. Closing..."
             wait(2)
@@ -106,9 +137,8 @@ end
 submitButton.MouseButton1Click:Connect(verifyKey)
 keyBox.FocusLost:Connect(function(enterPressed) if enterPressed then verifyKey() end end)
 
--- Main Menu
 function loadMainMenu()
-    -- Settings
+    -- SETTINGS
     local flightSpeed = 50
     local flying = false
     local marking = false
@@ -121,8 +151,9 @@ function loadMainMenu()
     local carFlying = false
     local carBodyVelocity, carBodyGyro
     local currentVehicle = nil
+    local autoSpeed = 50
 
-    -- Main GUI
+    -- MAIN GUI
     local screenGui = Instance.new("ScreenGui")
     screenGui.Name = "NapoloMenu"
     screenGui.Parent = player.PlayerGui
@@ -165,7 +196,7 @@ function loadMainMenu()
     title.TextXAlignment = Enum.TextXAlignment.Left
     title.Parent = titleBar
 
-    -- Drag Functionality
+    -- Drag
     local dragging, dragStartPos, frameStartPos
     titleBar.InputBegan:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
@@ -175,7 +206,6 @@ function loadMainMenu()
             titleBar.BackgroundColor3 = Color3.fromRGB(30, 30, 50)
         end
     end)
-
     UserInputService.InputChanged:Connect(function(input)
         if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
             local delta = input.Position - dragStartPos
@@ -187,7 +217,6 @@ function loadMainMenu()
             )
         end
     end)
-
     UserInputService.InputEnded:Connect(function(input)
         if input.UserInputType == Enum.UserInputType.MouseButton1 then
             dragging = false
@@ -205,7 +234,7 @@ function loadMainMenu()
 
     local flyTab = Instance.new("TextButton")
     flyTab.Name = "FlyTab"
-    flyTab.Size = UDim2.new(0.33, -5, 1, 0)
+    flyTab.Size = UDim2.new(0.25, -5, 1, 0)
     flyTab.Position = UDim2.new(0, 0, 0, 0)
     flyTab.Text = "FLY"
     flyTab.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
@@ -213,42 +242,53 @@ function loadMainMenu()
     flyTab.Font = Enum.Font.GothamBold
     flyTab.TextSize = 14
     flyTab.Parent = tabFrame
-
     local flyTabCorner = Instance.new("UICorner")
     flyTabCorner.CornerRadius = UDim.new(0, 6)
     flyTabCorner.Parent = flyTab
 
     local espTab = Instance.new("TextButton")
     espTab.Name = "EspTab"
-    espTab.Size = UDim2.new(0.33, -5, 1, 0)
-    espTab.Position = UDim2.new(0.33, 5, 0, 0)
+    espTab.Size = UDim2.new(0.25, -5, 1, 0)
+    espTab.Position = UDim2.new(0.25, 5, 0, 0)
     espTab.Text = "ESP"
     espTab.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
     espTab.TextColor3 = Color3.fromRGB(255, 255, 255)
     espTab.Font = Enum.Font.GothamBold
     espTab.TextSize = 14
     espTab.Parent = tabFrame
-
     local espTabCorner = Instance.new("UICorner")
     espTabCorner.CornerRadius = UDim.new(0, 6)
     espTabCorner.Parent = espTab
 
     local tpTab = Instance.new("TextButton")
     tpTab.Name = "TpTab"
-    tpTab.Size = UDim2.new(0.33, -5, 1, 0)
-    tpTab.Position = UDim2.new(0.66, 5, 0, 0)
+    tpTab.Size = UDim2.new(0.25, -5, 1, 0)
+    tpTab.Position = UDim2.new(0.5, 5, 0, 0)
     tpTab.Text = "TP"
     tpTab.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
     tpTab.TextColor3 = Color3.fromRGB(255, 255, 255)
     tpTab.Font = Enum.Font.GothamBold
     tpTab.TextSize = 14
     tpTab.Parent = tabFrame
-
     local tpTabCorner = Instance.new("UICorner")
     tpTabCorner.CornerRadius = UDim.new(0, 6)
     tpTabCorner.Parent = tpTab
 
-    -- Content Frame
+    local autoTab = Instance.new("TextButton")
+    autoTab.Name = "AutoTab"
+    autoTab.Size = UDim2.new(0.25, -5, 1, 0)
+    autoTab.Position = UDim2.new(0.75, 5, 0, 0)
+    autoTab.Text = "AUTO"
+    autoTab.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
+    autoTab.TextColor3 = Color3.fromRGB(255, 255, 255)
+    autoTab.Font = Enum.Font.GothamBold
+    autoTab.TextSize = 14
+    autoTab.Parent = tabFrame
+    local autoTabCorner = Instance.new("UICorner")
+    autoTabCorner.CornerRadius = UDim.new(0, 6)
+    autoTabCorner.Parent = autoTab
+
+    -- Content frame
     local contentFrame = Instance.new("Frame")
     contentFrame.Name = "Content"
     contentFrame.Size = UDim2.new(1, -10, 1, -110)
@@ -274,7 +314,6 @@ function loadMainMenu()
     flightButton.Font = Enum.Font.GothamMedium
     flightButton.TextSize = 14
     flightButton.Parent = flyContent
-
     local buttonCorner = Instance.new("UICorner")
     buttonCorner.CornerRadius = UDim.new(0, 8)
     buttonCorner.Parent = flightButton
@@ -305,7 +344,6 @@ function loadMainMenu()
     speedSlider.Text = ""
     speedSlider.BackgroundColor3 = Color3.fromRGB(80, 80, 90)
     speedSlider.Parent = speedContainer
-
     local sliderCorner = Instance.new("UICorner")
     sliderCorner.CornerRadius = UDim.new(0, 8)
     sliderCorner.Parent = speedSlider
@@ -316,7 +354,6 @@ function loadMainMenu()
     speedFill.BackgroundColor3 = Color3.fromRGB(0, 150, 255)
     speedFill.BorderSizePixel = 0
     speedFill.Parent = speedSlider
-
     local fillCorner = Instance.new("UICorner")
     fillCorner.CornerRadius = UDim.new(0, 8)
     fillCorner.Parent = speedFill
@@ -331,7 +368,6 @@ function loadMainMenu()
     carFlyButton.Font = Enum.Font.GothamMedium
     carFlyButton.TextSize = 14
     carFlyButton.Parent = flyContent
-
     local carFlyCorner = Instance.new("UICorner")
     carFlyCorner.CornerRadius = UDim.new(0, 8)
     carFlyCorner.Parent = carFlyButton
@@ -354,7 +390,6 @@ function loadMainMenu()
     markButton.Font = Enum.Font.GothamMedium
     markButton.TextSize = 14
     markButton.Parent = espContent
-
     local markCorner = Instance.new("UICorner")
     markCorner.CornerRadius = UDim.new(0, 6)
     markCorner.Parent = markButton
@@ -369,7 +404,6 @@ function loadMainMenu()
     teamColorToggle.Font = Enum.Font.GothamMedium
     teamColorToggle.TextSize = 14
     teamColorToggle.Parent = espContent
-
     local teamColorCorner = Instance.new("UICorner")
     teamColorCorner.CornerRadius = UDim.new(0, 6)
     teamColorCorner.Parent = teamColorToggle
@@ -384,7 +418,6 @@ function loadMainMenu()
     nameToggle.Font = Enum.Font.GothamMedium
     nameToggle.TextSize = 14
     nameToggle.Parent = espContent
-
     local nameToggleCorner = Instance.new("UICorner")
     nameToggleCorner.CornerRadius = UDim.new(0, 6)
     nameToggleCorner.Parent = nameToggle
@@ -399,7 +432,6 @@ function loadMainMenu()
     distanceToggle.Font = Enum.Font.GothamMedium
     distanceToggle.TextSize = 14
     distanceToggle.Parent = espContent
-
     local distanceCorner = Instance.new("UICorner")
     distanceCorner.CornerRadius = UDim.new(0, 6)
     distanceCorner.Parent = distanceToggle
@@ -423,7 +455,6 @@ function loadMainMenu()
     playerNameBox.Font = Enum.Font.Gotham
     playerNameBox.TextSize = 14
     playerNameBox.Parent = tpContent
-
     local nameBoxCorner = Instance.new("UICorner")
     nameBoxCorner.CornerRadius = UDim.new(0, 6)
     nameBoxCorner.Parent = playerNameBox
@@ -438,16 +469,125 @@ function loadMainMenu()
     teleportButton.Font = Enum.Font.GothamMedium
     teleportButton.TextSize = 14
     teleportButton.Parent = tpContent
-
     local teleportCorner = Instance.new("UICorner")
     teleportCorner.CornerRadius = UDim.new(0, 6)
     teleportCorner.Parent = teleportButton
 
-    -- Functions
+    -- AUTO TAB
+    local autoContent = Instance.new("Frame")
+    autoContent.Name = "AutoContent"
+    autoContent.Size = UDim2.new(1, 0, 1, 0)
+    autoContent.BackgroundTransparency = 1
+    autoContent.Visible = false
+    autoContent.Parent = contentFrame
+
+    local autoSpeedLabel = Instance.new("TextLabel")
+    autoSpeedLabel.Name = "AutoSpeedLabel"
+    autoSpeedLabel.Text = "AUTOGESCHWINDIGKEIT: " .. autoSpeed
+    autoSpeedLabel.Size = UDim2.new(1, 0, 0, 20)
+    autoSpeedLabel.Position = UDim2.new(0, 0, 0, 0)
+    autoSpeedLabel.BackgroundTransparency = 1
+    autoSpeedLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+    autoSpeedLabel.Font = Enum.Font.Gotham
+    autoSpeedLabel.TextSize = 12
+    autoSpeedLabel.TextXAlignment = Enum.TextXAlignment.Left
+    autoSpeedLabel.Parent = autoContent
+
+    local autoSpeedSlider = Instance.new("TextButton")
+    autoSpeedSlider.Name = "AutoSpeedSlider"
+    autoSpeedSlider.Size = UDim2.new(1, 0, 0, 15)
+    autoSpeedSlider.Position = UDim2.new(0, 0, 0, 25)
+    autoSpeedSlider.Text = ""
+    autoSpeedSlider.BackgroundColor3 = Color3.fromRGB(80, 80, 90)
+    autoSpeedSlider.Parent = autoContent
+    local autoSliderCorner = Instance.new("UICorner")
+    autoSliderCorner.CornerRadius = UDim.new(0, 8)
+    autoSliderCorner.Parent = autoSpeedSlider
+
+    local autoSpeedFill = Instance.new("Frame")
+    autoSpeedFill.Name = "AutoSpeedFill"
+    autoSpeedFill.Size = UDim2.new((autoSpeed-10)/190, 0, 1, 0)
+    autoSpeedFill.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
+    autoSpeedFill.BorderSizePixel = 0
+    autoSpeedFill.Parent = autoSpeedSlider
+    local autoFillCorner = Instance.new("UICorner")
+    autoFillCorner.CornerRadius = UDim.new(0, 8)
+    autoFillCorner.Parent = autoSpeedFill
+
+    local applySpeedButton = Instance.new("TextButton")
+    applySpeedButton.Name = "ApplySpeedButton"
+    applySpeedButton.Size = UDim2.new(1, 0, 0, 40)
+    applySpeedButton.Position = UDim2.new(0, 0, 0, 55)
+    applySpeedButton.Text = "GESCHWINDIGKEIT ANWENDEN"
+    applySpeedButton.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
+    applySpeedButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    applySpeedButton.Font = Enum.Font.GothamBold
+    applySpeedButton.TextSize = 16
+    applySpeedButton.Parent = autoContent
+    local applySpeedCorner = Instance.new("UICorner")
+    applySpeedCorner.CornerRadius = UDim.new(0, 8)
+    applySpeedCorner.Parent = applySpeedButton
+
+    -- TAB LOGIK
+    function switchTab(tab)
+        currentTab = tab
+        flyContent.Visible = (tab == "FLY")
+        espContent.Visible = (tab == "ESP")
+        tpContent.Visible = (tab == "TP")
+        autoContent.Visible = (tab == "AUTO")
+        flyTab.BackgroundColor3 = (tab == "FLY") and Color3.fromRGB(0, 120, 255) or Color3.fromRGB(60, 60, 70)
+        espTab.BackgroundColor3 = (tab == "ESP") and Color3.fromRGB(170, 0, 0) or Color3.fromRGB(60, 60, 70)
+        tpTab.BackgroundColor3 = (tab == "TP") and Color3.fromRGB(0, 170, 0) or Color3.fromRGB(60, 60, 70)
+        autoTab.BackgroundColor3 = (tab == "AUTO") and Color3.fromRGB(0, 200, 100) or Color3.fromRGB(60, 60, 70)
+    end
+
+    flyTab.MouseButton1Click:Connect(function() switchTab("FLY") end)
+    espTab.MouseButton1Click:Connect(function() switchTab("ESP") end)
+    tpTab.MouseButton1Click:Connect(function() switchTab("TP") end)
+    autoTab.MouseButton1Click:Connect(function() switchTab("AUTO") end)
+
+    -- AUTO LOGIK
+    local function applyAutoSpeed()
+        local humanoid = character:FindFirstChildOfClass("Humanoid")
+        if humanoid and humanoid.SeatPart then
+            local vehicle = humanoid.SeatPart:FindFirstAncestorOfClass("Model")
+            if vehicle then
+                for _, v in pairs(vehicle:GetDescendants()) do
+                    if v:IsA("VehicleSeat") or v:IsA("Seat") then
+                        pcall(function() v.MaxSpeed = autoSpeed end)
+                        pcall(function() v.Torque = 100000 end)
+                        pcall(function() v.MaxThrottle = 1 end)
+                    end
+                end
+            end
+        end
+    end
+    autoSpeedSlider.MouseButton1Down:Connect(function()
+        local connection
+        connection = UserInputService.InputChanged:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseMovement then
+                local xPos = (input.Position.X - autoSpeedSlider.AbsolutePosition.X) / autoSpeedSlider.AbsoluteSize.X
+                xPos = math.clamp(xPos, 0, 1)
+                autoSpeed = math.floor(10 + xPos * 190)
+                autoSpeedFill.Size = UDim2.new(xPos, 0, 1, 0)
+                autoSpeedLabel.Text = "AUTOGESCHWINDIGKEIT: " .. autoSpeed
+            end
+        end)
+        UserInputService.InputEnded:Connect(function(input)
+            if input.UserInputType == Enum.UserInputType.MouseButton1 then
+                connection:Disconnect()
+            end
+        end)
+    end)
+    applySpeedButton.MouseButton1Click:Connect(applyAutoSpeed)
+
+    -- Funktionen für alle Features
+
+    -- Teleport zu anderem Spieler
     local function teleportToPlayer()
         local targetName = playerNameBox.Text
         if targetName == "" then return end
-        
+
         local targetPlayer = nil
         for _, p in pairs(game:GetService("Players"):GetPlayers()) do
             if string.find(string.lower(p.Name), string.lower(targetName)) then
@@ -455,11 +595,10 @@ function loadMainMenu()
                 break
             end
         end
-        
+
         if targetPlayer and targetPlayer.Character then
             local targetRoot = targetPlayer.Character:FindFirstChild("HumanoidRootPart")
             local localRoot = character:FindFirstChild("HumanoidRootPart")
-            
             if targetRoot and localRoot then
                 localRoot.CFrame = targetRoot.CFrame + Vector3.new(0, 3, 0)
             end
@@ -468,22 +607,12 @@ function loadMainMenu()
         end
     end
 
-    local function switchTab(tab)
-        currentTab = tab
-        flyContent.Visible = (tab == "FLY")
-        espContent.Visible = (tab == "ESP")
-        tpContent.Visible = (tab == "TP")
-        
-        flyTab.BackgroundColor3 = (tab == "FLY") and Color3.fromRGB(0, 120, 255) or Color3.fromRGB(60, 60, 70)
-        espTab.BackgroundColor3 = (tab == "ESP") and Color3.fromRGB(170, 0, 0) or Color3.fromRGB(60, 60, 70)
-        tpTab.BackgroundColor3 = (tab == "TP") and Color3.fromRGB(0, 170, 0) or Color3.fromRGB(60, 60, 70)
-    end
-
+    -- ESP Features
     local function toggleTeamColors()
         useTeamColors = not useTeamColors
         teamColorToggle.Text = "TEAMFARBEN: " .. (useTeamColors and "AN" or "AUS")
         teamColorToggle.BackgroundColor3 = useTeamColors and Color3.fromRGB(0, 120, 180) or Color3.fromRGB(60, 60, 70)
-        
+
         if marking then
             for player, highlight in pairs(markers) do
                 if player.Character then
@@ -503,7 +632,7 @@ function loadMainMenu()
         showDistance = not showDistance
         distanceToggle.Text = "ENTFERNUNG: " .. (showDistance and "AN" or "AUS")
         distanceToggle.BackgroundColor3 = showDistance and Color3.fromRGB(0, 120, 180) or Color3.fromRGB(60, 60, 70)
-        
+
         if marking then
             for player, highlight in pairs(markers) do
                 if player.Character then
@@ -520,7 +649,7 @@ function loadMainMenu()
         showNames = not showNames
         nameToggle.Text = "NAMEN ANZEIGEN: " .. (showNames and "AN" or "AUS")
         nameToggle.BackgroundColor3 = showNames and Color3.fromRGB(0, 120, 180) or Color3.fromRGB(60, 60, 70)
-        
+
         if marking then
             for player, highlight in pairs(markers) do
                 if player.Character then
@@ -535,11 +664,9 @@ function loadMainMenu()
 
     local function toggleMarking()
         marking = not marking
-        
         if marking then
             markButton.Text = "SPIELER MARKIEREN: AN"
             markButton.BackgroundColor3 = Color3.fromRGB(170, 0, 0)
-            
             for _, otherPlayer in ipairs(game.Players:GetPlayers()) do
                 if otherPlayer ~= player and otherPlayer.Character then
                     local highlight = Instance.new("Highlight")
@@ -547,7 +674,7 @@ function loadMainMenu()
                     highlight.FillColor = useTeamColors and otherPlayer.TeamColor.Color or Color3.fromRGB(255, 0, 0)
                     highlight.OutlineColor = useTeamColors and otherPlayer.TeamColor.Color or Color3.fromRGB(150, 0, 0)
                     highlight.Parent = otherPlayer.Character
-                    
+
                     if showNames then
                         local billboard = Instance.new("BillboardGui")
                         billboard.Name = "NameBillboard"
@@ -556,7 +683,7 @@ function loadMainMenu()
                         billboard.AlwaysOnTop = true
                         billboard.Enabled = showNames
                         billboard.Adornee = otherPlayer.Character:WaitForChild("Head")
-                        
+
                         local nameLabel = Instance.new("TextLabel")
                         nameLabel.Size = UDim2.new(1, 0, 1, 0)
                         nameLabel.Text = otherPlayer.Name
@@ -565,10 +692,10 @@ function loadMainMenu()
                         nameLabel.Font = Enum.Font.GothamBold
                         nameLabel.TextSize = 18
                         nameLabel.Parent = billboard
-                        
+
                         billboard.Parent = highlight
                     end
-                    
+
                     if showDistance then
                         local distanceBillboard = Instance.new("BillboardGui")
                         distanceBillboard.Name = "DistanceBillboard"
@@ -577,7 +704,7 @@ function loadMainMenu()
                         distanceBillboard.AlwaysOnTop = true
                         distanceBillboard.Enabled = showDistance
                         distanceBillboard.Adornee = otherPlayer.Character:WaitForChild("Head")
-                        
+
                         local distanceLabel = Instance.new("TextLabel")
                         distanceLabel.Name = "DistanceLabel"
                         distanceLabel.Size = UDim2.new(1, 0, 1, 0)
@@ -586,17 +713,16 @@ function loadMainMenu()
                         distanceLabel.Font = Enum.Font.GothamBold
                         distanceLabel.TextSize = 14
                         distanceLabel.Parent = distanceBillboard
-                        
+
                         distanceBillboard.Parent = highlight
                     end
-                    
+
                     markers[otherPlayer] = highlight
                 end
             end
         else
             markButton.Text = "SPIELER MARKIEREN: AUS"
             markButton.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
-            
             for _, highlight in pairs(markers) do
                 highlight:Destroy()
             end
@@ -606,10 +732,10 @@ function loadMainMenu()
 
     local function updateDistances()
         if not marking or not showDistance then return end
-        
+
         local localRoot = character and character:FindFirstChild("HumanoidRootPart")
         if not localRoot then return end
-        
+
         for player, highlight in pairs(markers) do
             if player.Character then
                 local playerRoot = player.Character:FindFirstChild("HumanoidRootPart")
@@ -627,25 +753,25 @@ function loadMainMenu()
         end
     end
 
+    -- FLY und CARFLY
     local function toggleFlight()
         flying = not flying
-        
         if flying then
             humanoid.PlatformStand = true
             bodyVelocity = Instance.new("BodyVelocity")
             bodyVelocity.Velocity = Vector3.new(0, 0, 0)
             bodyVelocity.MaxForce = Vector3.new(9e9, 9e9, 9e9)
             bodyVelocity.P = 1000
-            
+
             bodyGyro = Instance.new("BodyGyro")
             bodyGyro.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
             bodyGyro.P = 10000
             bodyGyro.D = 500
             bodyGyro.CFrame = character:WaitForChild("HumanoidRootPart").CFrame
-            
+
             bodyVelocity.Parent = character:WaitForChild("HumanoidRootPart")
             bodyGyro.Parent = character:WaitForChild("HumanoidRootPart")
-            
+
             flightButton.Text = "FLUGMODUS: AN"
             flightButton.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
         else
@@ -659,38 +785,37 @@ function loadMainMenu()
 
     local function toggleCarFly()
         carFlying = not carFlying
-        
+
         if carFlying then
             currentVehicle = nil
             local humanoid = character:FindFirstChildOfClass("Humanoid")
             if humanoid and humanoid.SeatPart then
                 currentVehicle = humanoid.SeatPart:FindFirstAncestorOfClass("Model")
             end
-            
+
             if currentVehicle then
                 local rootPart = currentVehicle:FindFirstChild("HumanoidRootPart") or currentVehicle.PrimaryPart or currentVehicle:FindFirstChildWhichIsA("BasePart")
-                
                 if rootPart then
                     for _, v in pairs(rootPart:GetChildren()) do
                         if v:IsA("BodyVelocity") or v:IsA("BodyGyro") then
                             v:Destroy()
                         end
                     end
-                    
+
                     carBodyVelocity = Instance.new("BodyVelocity")
                     carBodyVelocity.Velocity = Vector3.new(0, 0, 0)
                     carBodyVelocity.MaxForce = Vector3.new(9e9, 9e9, 9e9)
                     carBodyVelocity.P = 1000
-                    
+
                     carBodyGyro = Instance.new("BodyGyro")
                     carBodyGyro.MaxTorque = Vector3.new(9e9, 9e9, 9e9)
                     carBodyGyro.P = 10000
                     carBodyGyro.D = 500
                     carBodyGyro.CFrame = rootPart.CFrame
-                    
+
                     carBodyVelocity.Parent = rootPart
                     carBodyGyro.Parent = rootPart
-                    
+
                     carFlyButton.Text = "CARFLY: AN"
                     carFlyButton.BackgroundColor3 = Color3.fromRGB(0, 120, 255)
                 else
@@ -715,7 +840,7 @@ function loadMainMenu()
                 end
                 currentVehicle = nil
             end
-            
+
             carFlyButton.Text = "CARFLY: AUS"
             carFlyButton.BackgroundColor3 = Color3.fromRGB(60, 60, 70)
         end
@@ -725,73 +850,68 @@ function loadMainMenu()
         if flying and bodyVelocity and bodyGyro then
             local rootPart = character:FindFirstChild("HumanoidRootPart")
             if not rootPart then return end
-            
+
             bodyGyro.CFrame = CFrame.new(rootPart.Position, rootPart.Position + rootPart.CFrame.LookVector)
-            
+
             local direction = Vector3.new(0, 0, 0)
             local camera = workspace.CurrentCamera
             local lookVector = camera.CFrame.LookVector
             lookVector = Vector3.new(lookVector.X, 0, lookVector.Z).Unit
             local rightVector = camera.CFrame.RightVector
             rightVector = Vector3.new(rightVector.X, 0, rightVector.Z).Unit
-            
+
             if UserInputService:IsKeyDown(Enum.KeyCode.W) then direction += lookVector end
             if UserInputService:IsKeyDown(Enum.KeyCode.S) then direction -= lookVector end
             if UserInputService:IsKeyDown(Enum.KeyCode.A) then direction -= rightVector end
             if UserInputService:IsKeyDown(Enum.KeyCode.D) then direction += rightVector end
             if UserInputService:IsKeyDown(Enum.KeyCode.Space) then direction += Vector3.new(0, 1, 0) end
             if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then direction += Vector3.new(0, -1, 0) end
-            
+
             if direction.Magnitude > 0 then
                 direction = direction.Unit
             end
-            
+
             bodyVelocity.Velocity = direction * flightSpeed
         end
-        
+
         if carFlying and carBodyVelocity and carBodyGyro and currentVehicle then
             local rootPart = currentVehicle:FindFirstChild("HumanoidRootPart") or currentVehicle.PrimaryPart or currentVehicle:FindFirstChildWhichIsA("BasePart")
             if not rootPart then return end
-            
+
             carBodyGyro.CFrame = CFrame.new(rootPart.Position, rootPart.Position + rootPart.CFrame.LookVector)
-            
+
             local direction = Vector3.new(0, 0, 0)
             local camera = workspace.CurrentCamera
             local lookVector = camera.CFrame.LookVector
             lookVector = Vector3.new(lookVector.X, 0, lookVector.Z).Unit
             local rightVector = camera.CFrame.RightVector
             rightVector = Vector3.new(rightVector.X, 0, rightVector.Z).Unit
-            
+
             if UserInputService:IsKeyDown(Enum.KeyCode.W) then direction += lookVector end
             if UserInputService:IsKeyDown(Enum.KeyCode.S) then direction -= lookVector end
             if UserInputService:IsKeyDown(Enum.KeyCode.A) then direction -= rightVector end
             if UserInputService:IsKeyDown(Enum.KeyCode.D) then direction += rightVector end
             if UserInputService:IsKeyDown(Enum.KeyCode.X) then direction += Vector3.new(0, 1, 0) end
             if UserInputService:IsKeyDown(Enum.KeyCode.LeftShift) then direction += Vector3.new(0, -1, 0) end
-            
+
             if direction.Magnitude > 0 then
                 direction = direction.Unit
             end
-            
+
             carBodyVelocity.Velocity = direction * flightSpeed
         end
     end
 
-    -- Event Connections
-    flyTab.MouseButton1Click:Connect(function() switchTab("FLY") end)
-    espTab.MouseButton1Click:Connect(function() switchTab("ESP") end)
-    tpTab.MouseButton1Click:Connect(function() switchTab("TP") end)
-    
+    -- Event Connections für alles
     teleportButton.MouseButton1Click:Connect(teleportToPlayer)
     playerNameBox.FocusLost:Connect(function(enterPressed) if enterPressed then teleportToPlayer() end end)
-    
     flightButton.MouseButton1Click:Connect(toggleFlight)
     carFlyButton.MouseButton1Click:Connect(toggleCarFly)
     markButton.MouseButton1Click:Connect(toggleMarking)
     teamColorToggle.MouseButton1Click:Connect(toggleTeamColors)
     nameToggle.MouseButton1Click:Connect(toggleNames)
     distanceToggle.MouseButton1Click:Connect(toggleDistance)
-    
+
     -- Speed Slider
     speedSlider.MouseButton1Down:Connect(function()
         local connection
@@ -804,7 +924,6 @@ function loadMainMenu()
                 speedLabel.Text = "GESCHWINDIGKEIT: "..flightSpeed
             end
         end)
-        
         UserInputService.InputEnded:Connect(function(input)
             if input.UserInputType == Enum.UserInputType.MouseButton1 then
                 connection:Disconnect()
@@ -848,7 +967,7 @@ function loadMainMenu()
                 highlight.FillColor = useTeamColors and newPlayer.TeamColor.Color or Color3.fromRGB(255, 0, 0)
                 highlight.OutlineColor = useTeamColors and newPlayer.TeamColor.Color or Color3.fromRGB(150, 0, 0)
                 highlight.Parent = char
-                
+
                 if showNames then
                     local billboard = Instance.new("BillboardGui")
                     billboard.Name = "NameBillboard"
@@ -857,7 +976,6 @@ function loadMainMenu()
                     billboard.AlwaysOnTop = true
                     billboard.Enabled = showNames
                     billboard.Adornee = char:WaitForChild("Head")
-                    
                     local nameLabel = Instance.new("TextLabel")
                     nameLabel.Size = UDim2.new(1, 0, 1, 0)
                     nameLabel.Text = newPlayer.Name
@@ -866,10 +984,9 @@ function loadMainMenu()
                     nameLabel.Font = Enum.Font.GothamBold
                     nameLabel.TextSize = 18
                     nameLabel.Parent = billboard
-                    
                     billboard.Parent = highlight
                 end
-                
+
                 if showDistance then
                     local distanceBillboard = Instance.new("BillboardGui")
                     distanceBillboard.Name = "DistanceBillboard"
@@ -878,7 +995,6 @@ function loadMainMenu()
                     distanceBillboard.AlwaysOnTop = true
                     distanceBillboard.Enabled = showDistance
                     distanceBillboard.Adornee = char:WaitForChild("Head")
-                    
                     local distanceLabel = Instance.new("TextLabel")
                     distanceLabel.Name = "DistanceLabel"
                     distanceLabel.Size = UDim2.new(1, 0, 1, 0)
@@ -887,15 +1003,13 @@ function loadMainMenu()
                     distanceLabel.Font = Enum.Font.GothamBold
                     distanceLabel.TextSize = 14
                     distanceLabel.Parent = distanceBillboard
-                    
                     distanceBillboard.Parent = highlight
                 end
-                
+
                 markers[newPlayer] = highlight
             end
         end)
     end)
-
     -- Set Default Tab
     switchTab("FLY")
 end
