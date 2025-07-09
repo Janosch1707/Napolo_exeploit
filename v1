@@ -5,7 +5,7 @@ local UserInputService = game:GetService("UserInputService")
 local RunService = game:GetService("RunService")
 
 -- Key-System
-local correctKey = "Napolo2025"
+local correctKey = "Napolo20254"
 local keyVerified = false
 local keyAttempts = 0
 local maxAttempts = 3
